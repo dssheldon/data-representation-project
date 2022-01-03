@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+
+            <!--Data Represenation Big Project -->
+			<!--Created By: Sheldon D'Souza - G00387857 -->
+            
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+            <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+            <link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+        
+                
+
+        <style>                
+        
+        
+        /* This is the page header*/
+        /* Set postion, dimensions and formatting*/
+        #page_header {
+                        position: relative;
+                        left:0;
+                        background: #fcf75e;
+                        top:-1%;
+                        width:100%;
+                        height: 25%;
+                        padding:0;
+                        border-left-style: solid;
+                        border-left-color: gray;
+                        border-left-width: 15px;
+                    }
+
+        /* Set the postion and font properties of the header text */
+		#header_text {position: relative; left: 2%;top:25%;font-size:250%;}
+
+        
+        h1, h2, h3, h4, h5, h6 
+        { 
+            font-family: 'Corben', Georgia, Times, serif;
+        }
+        p, div 
+        {
+            font-family: 'Nobile', Helvetica, Arial, sans-serif;
+            }
+        
+        
+        body 
+        {
+            background: url('img/cream_dust.png') repeat 0 0;
+        }
+ 
+        h1 
+        { 
+            text-shadow: 1px 1px 1px #ccc;
+        }
+
+        .button
+        {
+            display:inline-block;
+            padding:0.46em 1.6em;
+            border:0.1em solid #000000;
+            margin:0 0.2em 0.2em 0;
+            border-radius:0.12em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            color:#000000;
+            text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+            background-color:#FFFFFF;
+            text-align:center;
+            transition: all 0.15s;
+        }
+        .button:hover
+        {
+        text-shadow: 0 0 2em rgba(255,255,255,1);
+        color:red;
+        border-color:yellow;
+        }
+
+
+
+        </style>    
+
+
+    </head>
+    <body>
+
+        <div id = "page_header">
+		
+            <h1 id="header_text"> Stocks and Shares API Load </h1>
+    
+        </div>
+
+
+		<!-- Div to display headings -->
+        <div id="topAPIStocks" style="display:none">
+            <h2>Display Stocks from API</h2>
+        </div>
+
+        <!-- Table to display top 10 stock from the external API results with option to add to database -->
+		<div id="display">
+            <h2>Top 10 Stocks from API</h2><br>
+            <button  class=button onClick="location.href='index.html';">Return to Main Page</button>
+            <button  class=button  onClick="onLogout()">Logout</button><br><br>
+            <table id="stockTable" class="table">
+                <tr>
+                    <th>ID</th><th>Symbol</th><th>Opening</th><th>Closing</th><th>Volume</th><th></th><th></th>
+                </tr>
+                
+            </table>
+
+        </div>
+
+        <script>
+
+            // script for closing out the user session by redirecing via ajax to the relevant app route
+			function onLogout()
+            {
+               $.ajax
+               ({
+                    url: "/logout",
+                   success: function (result) 
+                   {
+                        console.log("Success")
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error" + error)
+                    }
+                })
+            window.alert("Logged Out. You will now be taken to the login page");
+            window.location.assign("login.html");
+            
+            }
+
+
+             function showDisplay() {
+                    document.getElementById('display').style.display = "block"
+                    document.getElementById('topAPIStocks').style.display = "none"
+
+                }
+
+            //obtain a stock record received from the API and displayed in the stock table
+			//POST the record to server using ajax so that it can be added to the local database. 
+            function doCreate(thisElem){
+            stock= getStockFromForm(thisElem)
+            console.log(stock)
+            $.ajax({
+                url:"/addFromAPI",
+                data:JSON.stringify(stock),
+                method:"POST",
+                dataType:"JSON",
+                contentType: "application/json; charset=utf-8",
+                success:function(result){
+                    //console.log(result) 
+                    showDisplay()
+
+                },
+                error:function(xhr,status,error){
+                    console.log("error"+error)
+                }
+            })
+            
+            }
+
+          //get the stock information from a particular row of the stock table
+            function getStockFromForm(thisElem){
+                var tableElement = document.getElementById('stockTable');
+                var rowElement = thisElem.parentNode.parentNode;
+                var index = rowElement.rowIndex;
+                console.log(rowElement.cells[1].innerHTML)
+
+                var stock = {}
+                stock.symbol = rowElement.cells[1].innerHTML 
+                stock.open = rowElement.cells[2].innerHTML 
+                stock.close = rowElement.cells[3].innerHTML 
+                stock.volume = rowElement.cells[4].innerHTML
+
+                tableElement.deleteRow(index)
+
+                return stock
+            }
+
+
+			//function to get stock table information based a fixed list of top stocks from external API and populate the table
+			//Note that I have added a user prompt for the external API Key
+            function populateTable(){
+                var apikey = window.prompt("Please enter the API Key: ")
+				stockName = "AAPL,MSFT,GOOGL,AMZN,TSLA,FB,NVDA,TSM,UNH,JPM"
+                $.ajax({
+                   url:'http://api.marketstack.com/v1/eod/latest?access_key='+apikey+'&symbols='+stockName,
+                   method:'GET',
+                   datatype:'JSON',
+                   success:function(results){
+                       //console.log(results['data'][0]['symbol'])
+                        for (stock of results['data']){
+                            addStockToTable(stock)
+                        }
+                   },
+                   error:function (xhr,status,error){
+                       console.log ("error "+error +" code:"+status)
+                   }
+
+               })
+               
+            }
+
+            //add each line received from the database to the table
+            function addStockToTable(stock){
+
+                tableElem = document.getElementById("stockTable")
+                rowElem = tableElem.insertRow(-1)
+                rowElem.setAttribute("id", stock.ID)
+                cell1 = rowElem.insertCell(0)
+                cell1.innerHTML = "TEMPID"
+                cell2 = rowElem.insertCell(1)
+                cell2.innerHTML = stock['symbol']
+                cell3 = rowElem.insertCell(2)
+                cell3.innerHTML = stock['open']
+                cell4 = rowElem.insertCell(3)
+                cell4.innerHTML = stock['close']
+                cell5 = rowElem.insertCell(4)
+                cell5.innerHTML = stock['volume']
+                cell6 = rowElem.insertCell(5)
+                cell6.innerHTML = '<button class=button onclick="doCreate(this)">Add to Database</button>'
+                }
+                populateTable();
+        </script>
+    </body>
+</html>

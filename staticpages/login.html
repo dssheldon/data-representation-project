@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<!--Data Represenation Big Project -->
+<!--Created By: Sheldon D'Souza - G00387857 -->
+
+<link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+
+
+	<title>LogIn</title>
+	
+	<style>
+	
+		
+		/* This is the page header*/
+        /* Set postion, dimensions and formatting*/
+        #page_header {
+                        position: relative;
+                        left:0;
+                        background: #fcf75e;
+                        top:-1%;
+                        width:100%;
+                        height: 100%;
+                        padding:1px;
+                        border-left-style: solid;
+                        border-left-color: gray;
+                        border-left-width: 15px;
+                    }
+
+		body  {  
+			margin: 0;  
+			padding: 0;  
+			font-family: 'Arial';
+            background: url('img/cream_dust.png') repeat 0 0;
+			}  
+		
+		/* Set position and stying attributes for the Login Container */ 
+		#login{  
+				position:relative;
+				top:10%;
+				width: 382px;  
+				overflow: hidden;  
+				margin: auto;  
+				margin: 20 0 0 450px;  
+				padding: 50px;  
+				background: gray;  
+				border-radius: 15px ;  
+			}
+
+		h1 { 
+            text-shadow: 1px 1px 1px #ccc;
+			font-family: 'Corben', Georgia, Times, serif;
+
+        }
+			
+
+		h2{  
+			text-align: center;  
+			color: #fcf75e;  
+			padding: 20px;  
+			}
+			
+		label{  
+			color: #fcf75e;  
+			font-size: 17px;  
+			}  
+		
+		/* Set attributes for the email field  */
+		#Uemail{  
+			width: 300px;  
+			height: 30px;  
+			border: none;  
+			border-radius: 3px;  
+			padding-left: 8px;  
+			}  
+		
+		/* Set attributes for the password field  */
+		#Pass{  
+			width: 300px;  
+			height: 30px;  
+			border: none;  
+			border-radius: 3px;  
+			padding-left: 8px;  
+			}  
+
+		/* Set attributes for the submit button for the login form  */
+		#log{  
+			width: 300px;  
+			height: 30px;  
+			border: none;  
+			border-radius: 17px;  
+			padding-left: 7px;  
+			color: blue;  
+			}  
+		span{  
+			color: white;  
+			font-size: 17px;  
+			}
+		a{  
+			float: left;  
+			background-color: grey;  
+			}  
+
+
+		/* This is the main container where the content of the website will be place */
+		/* Set the postion, dimensions and overflow properties*/
+		#content1 {
+					position: relative;
+						top: 50px;
+						left: 0;
+						width:100%;
+						height:82%;
+						overflow-x: hidden;
+						overflow-y: scroll;
+					}
+
+
+		/* Set the postion and font properties of the header text */
+		#header_text {position: relative; left: 2%;top:25%;font-size:200%;}
+
+
+
+	</style>
+
+</head>
+	
+	
+<body>
+
+<!-- See the CSS Style Section above for details on the use of divs -->
+	<div id = "page_header">
+
+		<h1 id="header_text"> Login Page </h1>
+
+	</div>
+
+	<div id="content1">
+		<div id="login">
+
+			<!--Create a form for the login detail -->
+			<form id="login">    
+				<label><b>Enter your email address</b>    
+				</label>    
+					<input type="email" name="Uemail" id="Uemail" placeholder="g00387857@gmit.ie" pattern ="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" required>    
+				<br><br>    
+				<label><b>Password</b>    
+				</label>    
+					<input type="Password" name="Pass" id="Pass" placeholder="password" required>    
+				<br><br>    
+					<input type="submit" name="log" id="log" value="Log In" onclick="myLogin()">       
+				<br><br>    
+					<input type="checkbox" id="check">    
+				<span>Remember me</span><br><br>    
+				<a href="#">Forgot Password</a>
+			</form>     
+		</div>    
+	</div>
+
+</body>
+
+<script>
+
+		//  Function validates the users email and password
+		// User email hardcoded as: "g00387857@gmit.ie" and password coded as: "password"
+		// Code inspired by - Ref: https://stackoverflow.com/questions/16398690/window-location-assignlink-is-not-working
+		// Reference : w3schools.com for use of 'window.location.assign()'
+
+		
+		//use DOM to access the submit attibute of the form and create function to check username and password
+		document.getElementById("login").onsubmit = function ()  {
+
+			//create variables for username and password
+			var ue = document.getElementById("Uemail").value;
+			var pw = document.getElementById("Pass").value;
+
+				//check whether username and password are correct
+				if (ue == "g00387857@gmit.ie" && pw == "password") 
+				{ window.location.assign("/loginsuccess"); //redirect to the loginsuccess page which will authenticate the session
+				} else {
+						window.alert("Invalid user name or password");
+						document.getElementById("Uemail").value = "";
+						document.getElementById("Pass").value = "";
+						}
+			//surpress the submit button to evaluate the results locally rather than using php and method
+			return false;	
+		}
+
+	
+</script>
+
+
+
+
+</html>

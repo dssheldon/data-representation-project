@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <!--Data Represenation Big Project -->
+			<!--Created By: Sheldon D'Souza - G00387857 -->
+		
+			
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+            <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+            <link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+    
+    
+        <style>                
+        /* All style related setting have been defined within this section*/
+        
+        
+        /* This is the page header*/
+        /* Set postion, dimensions and formatting*/
+        #page_header {
+                        position: relative;
+                        left:0;
+                        background: #fcf75e;
+                        top:-1%;
+                        width:100%;
+                        height: 10%;
+                        padding:0;
+                        border-left-style: solid;
+                        border-left-color: gray;
+                        border-left-width: 15px;
+                    }
+
+        /* Set the postion and font properties of the header text */
+		#header_text {position: relative; left: 2%;top:25%; font-size:250%;}
+
+        h1, h2, h3, h4, h5, h6 
+        { 
+            font-family: 'Corben', Georgia, Times, serif;
+        }
+        p, div 
+        {
+            font-family: 'Nobile', Helvetica, Arial, sans-serif;
+            }
+
+        body 
+        {
+            background: url('img/cream_dust.png') repeat 0 0;
+        }
+    
+        h1 
+        { 
+            text-shadow: 1px 1px 1px #ccc;
+        }
+
+        .button
+        {
+            display:inline-block;
+            padding:0.46em 1.6em;
+            border:0.1em solid #000000;
+            margin:0 0.2em 0.2em 0;
+            border-radius:0.12em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            color:#000000;
+            text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+            background-color:#FFFFFF;
+            text-align:center;
+            transition: all 0.15s;
+        }
+        .button:hover
+        {
+        text-shadow: 0 0 2em rgba(255,255,255,1);
+        color:red;
+        border-color:yellow;
+        }
+
+
+        </style>    
+
+
+    </head>
+    <body>
+
+        <div id = "page_header">
+		
+            <h1 id="header_text"> Stocks and Shares Tables  </h1>
+    
+        </div>
+
+
+        <!-- Create a div for the create and update table and place a blank form within it -->
+        <!-- Also added buttons within the div for navigation and operations -->
+        <div id="create-update" style="display:none">
+            <h2>Create or Edit Record</h2>
+            <table id="createUpdateForm">
+                <tr>
+                    <td>ID</td>
+                    <td><input type="number" name="ID" id="idInput"></td>
+                </tr>
+                <tr>
+                    <td>Stock Symbol</td>
+                    <td><input type="text" name="symbol"></td>
+                </tr>
+                <tr>
+                    <td>Opening Value</td>
+                    <td><input type="currency" name="open"></td>
+                </tr>
+                <tr>    
+                    <td>Closing Value</td>
+                    <td><input type="currency" name="close"></td>
+                </tr>
+                <tr>    
+                    <td>Volume Traded</td>
+                    <td><input type="number" name="volume"></td>
+                </tr>
+                <tr>
+                    <td></td><td>
+                        <button class=button id="back-button" onclick="location.href='index.html';" >Return to Main Page</button>
+                        <button class=button id="update-button" onclick="doUpdate()">Update Record</button>
+                        <td><button class=button id="create-button" onclick="doCreate()">Create Record</button></td>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="display">
+            <!-- Added headings and buttons within the div for navigation and operations -->
+            <h2>Stocks in Portfolio</h2>
+            <button class=button onClick="showCreate()">Create Record</button>
+            <button class=button onClick="location.href='apiLoad.html';">Load Stocks via API</button>
+            <button class=button onClick="location.href='highLow.html';">Search for and Add High and Lows</button>
+            <button class=button onClick="onLogout()">Logout</button><br><br>
+            <table id="stockTable" class="table">
+                <tr>
+                    <th>ID</th><th>Symbol</th><th>Opening</th><th>Closing</th><th>Volume</th><th></th><th></th>
+                </tr>
+                
+            </table>
+
+        </div>
+
+        <div id="logout">
+        </div>
+
+        <script>
+
+            // script for closing out the user session by redirecing via ajax to the relevant app route
+            function onLogout()
+            {
+               $.ajax
+               ({
+                    url: "/logout",
+                   success: function (result) 
+                   {
+                        console.log("Success")
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error" + error)
+                    }
+                })
+            window.alert("Logged Out. You will now be taken to the login page");
+            window.location.assign("login.html");
+            
+            }
+
+            //display relevant items
+            function showCreate(){
+                document.getElementById('display').style.display = "none"
+                document.getElementById('update-button').style.display = "none"
+                document.getElementById('create-button').style.display = "block"
+                document.getElementById('create-update').style.display = "block"
+
+            }
+
+            //display relevant items after  reading a row from the table
+            function showUpdate(thisElem){
+                var rowElement = thisElem.parentNode.parentNode;
+                stock = readStockFromRow(rowElement)
+                populateForm(stock)
+
+                document.getElementById('display').style.display = "none"
+                document.getElementById('update-button').style.display = "block"
+                document.getElementById('create-button').style.display = "none"
+                document.getElementById('create-update').style.display = "block"
+
+            }
+            //read a row from the table
+            function readStockFromRow(rowElement){
+                stock = {}
+                stock.ID = rowElement.getAttribute("id");
+                stock.symbol = rowElement.cells[1].firstChild.textContent
+                stock.open = rowElement.cells[2].firstChild.textContent
+                stock.close = rowElement.cells[3].firstChild.textContent
+                stock.volume = rowElement.cells[4].firstChild.textContent
+
+
+                return stock
+                
+            }
+            
+            //pre-populate the create-update form so that upates can be made with ease
+            function populateForm(stock){
+                var form = document.getElementById('createUpdateForm')
+
+                
+                form.querySelector('input[name="ID"]').value = stock.ID
+                form.querySelector('input[name="ID"]').disabled=true
+                
+                form.querySelector('input[name="symbol"]').value = stock.symbol
+                form.querySelector('input[name="open"]').value = stock.open
+                form.querySelector('input[name="close"]').value = stock.close      
+                form.querySelector('input[name="volume"]').value = stock.volume      
+            }
+
+            //clear the form so that new content can be entered
+            function clearForm() {
+                    var form = document.getElementById('createUpdateForm')
+
+                    form.querySelector('input[name="ID"]').value = ''
+                    form.querySelector('input[name="ID"]').disabled=false
+                    
+                    form.querySelector('input[name="symbol"]').value = ''
+                    form.querySelector('input[name="open"]').value = ''
+                    form.querySelector('input[name="close"]').value = ''      
+                    form.querySelector('input[name="volume"]').value = ''      
+
+                }
+
+            //create a record based on the information entered using  ajax and pass to stock table    
+            function doCreate(){
+                stock= getStockFromForm()
+                $.ajax({
+                    url:"/stocks",
+                    data:JSON.stringify(stock),
+                    method:"POST",
+                    dataType:"JSON",
+                    contentType: "application/json; charset=utf-8",
+                    success:function(result){
+                        console.log(result) 
+                        addStockToTable(stock)
+                        showDisplay()
+                        clearForm()
+
+                    },
+                    error:function(xhr,status,error){
+                        console.log("error"+error)
+                    }
+                })
+               
+            }
+
+            //function to get stock from form and update
+            function doUpdate(){
+                stock = getStockFromForm()
+                updateServer(stock)
+                
+            }
+
+            //update record based on the user amended values
+            function updateServer(stock){
+               $.ajax({
+                    url: "/stocks/"+stock.ID,
+                    data: JSON.stringify(stock),
+                    method: "PUT",
+                    dataType: "JSON",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        updateTableRow(stock)
+                        showDisplay()
+                        clearForm()
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error" + error)
+                    }
+                })
+            }
+
+            //function to delete element in table and database
+            function doDelete(thisElem){
+                var tableElement = document.getElementById('stockTable');
+                var rowElement = thisElem.parentNode.parentNode;
+                var index = rowElement.rowIndex;
+                ID = rowElement.getAttribute("id");
+                $.ajax({
+                    url:"/stocks/"+ID,
+                    method:"DELETE",
+                    dateType:"JSON",
+                    success:function(result){
+                        tableElement.deleteRow(index);
+                    },
+                    error:function(xhr,status,error){
+                        console.log(error)
+                    }
+                })
+                
+            }
+
+            //function to update the rows in the table with the stock information
+            function updateTableRow(stock){
+                rowElement = document.getElementById(stock.ID)
+                rowElement.cells[1].firstChild.textContent = stock.symbol
+                rowElement.cells[2].firstChild.textContent = stock.open
+                rowElement.cells[3].firstChild.textContent = stock.close
+                rowElement.cells[4].firstChild.textContent = stock.volume
+
+            }
+
+            //function to get the stock from the create and update form
+            function getStockFromForm(){
+                var form = document.getElementById('createUpdateForm')
+
+                var stock = {}
+                stock.ID = form.querySelector('input[name="ID"]').value
+                stock.symbol = form.querySelector('input[name="symbol"]').value
+                stock.open = form.querySelector('input[name="open"]').value
+                stock.close = form.querySelector('input[name="close"]').value
+                stock.volume = form.querySelector('input[name="volume"]').value
+
+                return stock
+            }
+             
+            //show display
+            function showDisplay() {
+                    document.getElementById('display').style.display = "block"
+                    document.getElementById('create-update').style.display = "none"
+
+                }
+
+            //function to get all stock information from the datbase to populate the table
+            function populateTable(){
+                //ajax getAll
+               $.ajax({
+                   url:'http://127.0.0.1:5000/stocks',
+                   method:'GET',
+                   datatype:'JSON',
+                   success:function(results){
+                        for (stock of results){
+                             addStockToTable(stock)
+                        }
+                   },
+                   error:function (xhr,status,error){
+                       console.log ("error "+error +" code:"+status)
+                   }
+
+               })
+               
+            }
+
+            //add each line received from the database to the table
+            function addStockToTable(stock){
+
+                tableElem = document.getElementById("stockTable")
+                rowElem = tableElem.insertRow(-1)
+                rowElem.setAttribute("id", stock.ID)
+                cell1 = rowElem.insertCell(0)
+                cell1.innerHTML = stock.ID
+                cell2 = rowElem.insertCell(1)
+                cell2.innerHTML = stock.symbol
+                cell3 = rowElem.insertCell(2)
+                cell3.innerHTML = stock.open
+                cell4 = rowElem.insertCell(3)
+                cell4.innerHTML = stock.close
+                cell5 = rowElem.insertCell(4)
+                cell5.innerHTML = stock.volume
+                cell6 = rowElem.insertCell(5)
+                cell6.innerHTML = '<button class=button onclick="showUpdate(this)">Update</button>'
+                cell7 = rowElem.insertCell(6)
+                cell7.innerHTML = '<button class=button onclick="doDelete(this)">Delete</button>'
+                 }
+            populateTable();    
+        </script>
+    </body>
+</html>
