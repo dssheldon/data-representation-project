@@ -34,6 +34,28 @@ class HighLowDao:
         self.db.commit()
         return cursor.lastrowid
 
+    def getAll(self):
+        #obtain all values from the database
+        cursor = self.db.cursor()
+        sql = 'select * from high_low'
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        returnArray = []
+        for result in results:
+            resultAsDict = self.convertToDict(result)
+            returnArray.append(resultAsDict)
+
+        return returnArray
+
+    def delete(self, ID):
+        #delete an item in the database
+       cursor = self.db.cursor()
+       sql = 'delete from high_low where ID = %s'
+       values = [ ID ]
+       cursor.execute(sql, values)
+       self.db.commit()
+       
+       return {}
 
 
     def convertToDict(self, result):

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <!--Data Represenation Big Project -->
+			<!--Created By: Sheldon D'Souza - G00387857 -->
+		
+			
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+            <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+            <link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+    
+    
+        <style>                
+        /* All style related setting have been defined within this section*/
+        
+        
+        /* This is the page header*/
+        /* Set postion, dimensions and formatting*/
+        #page_header {
+                        position: relative;
+                        left:0;
+                        background: #fcf75e;
+                        top:-1%;
+                        width:100%;
+                        height: 10%;
+                        padding:0;
+                        border-left-style: solid;
+                        border-left-color: gray;
+                        border-left-width: 15px;
+                    }
+
+        /* Set the postion and font properties of the header text */
+		#header_text {position: relative; left: 2%;top:25%; font-size:250%;}
+
+        h1, h2, h3, h4, h5, h6 
+        { 
+            font-family: 'Corben', Georgia, Times, serif;
+        }
+        p, div 
+        {
+            font-family: 'Nobile', Helvetica, Arial, sans-serif;
+            }
+
+        body 
+        {
+            background: url('img/cream_dust.png') repeat 0 0;
+        }
+    
+        h1 
+        { 
+            text-shadow: 1px 1px 1px #ccc;
+        }
+
+        .button
+        {
+            display:inline-block;
+            padding:0.46em 1.6em;
+            border:0.1em solid #000000;
+            margin:0 0.2em 0.2em 0;
+            border-radius:0.12em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            color:#000000;
+            text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+            background-color:#FFFFFF;
+            text-align:center;
+            transition: all 0.15s;
+        }
+        .button:hover
+        {
+        text-shadow: 0 0 2em rgba(255,255,255,1);
+        color:red;
+        border-color:yellow;
+        }
+
+
+        </style>    
+
+
+    </head>
+    <body>
+
+        <div id = "page_header">
+		
+            <h1 id="header_text"> Highs and Lows in Database </h1>
+    
+        </div>
+
+		
+		<div id="display">
+            <!-- Added headings and buttons within the div for navigation and operations -->
+            <h2>Stocks Highs and Lows</h2>
+            <button class=button onClick="location.href='index.html';">Return to Main Page</button>
+            <button class=button onClick="onLogout()">Logout</button><br><br>
+            <table id="highlowTable" class="table">
+                <tr>
+                    <th>ID</th><th>Symbol</th><th>High</th><th>Low</th><th></th><th></th>
+                </tr>
+                
+            </table>
+
+        </div>
+
+        <div id="logout">
+        </div>
+
+        <script>
+
+            // script for closing out the user session by redirecing via ajax to the relevant app route
+            function onLogout()
+            {
+               $.ajax
+               ({
+                    url: "/logout",
+                   success: function (result) 
+                   {
+                        console.log("Success")
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error" + error)
+                    }
+                })
+            window.alert("Logged Out. You will now be taken to the login page");
+            window.location.assign("login.html");
+            
+            }
+
+      
+
+            //function to delete element in table and database
+            function doDelete(thisElem){
+                var tableElement = document.getElementById('highlowTable');
+                var rowElement = thisElem.parentNode.parentNode;
+                var index = rowElement.rowIndex;
+                ID = rowElement.getAttribute("id");
+                $.ajax({
+                    url:"/highs/"+ID,
+                    method:"DELETE",
+                    dateType:"JSON",
+                    success:function(result){
+                        tableElement.deleteRow(index);
+                    },
+                    error:function(xhr,status,error){
+                        console.log(error)
+                    }
+                })
+                
+            }
+
+
+            //function to get all stock information from the datbase to populate the table
+            function populateTable(){
+                //ajax getAll
+               $.ajax({
+                   url:'http://127.0.0.1:5000/highs',
+                   method:'GET',
+                   datatype:'JSON',
+                   success:function(results){
+                        for (stock of results){
+                             addStockToTable(stock)
+                        }
+                   },
+                   error:function (xhr,status,error){
+                       console.log ("error "+error +" code:"+status)
+                   }
+
+               })
+               
+            }
+
+            //add each line received from the database to the table
+            function addStockToTable(stock){
+
+                tableElem = document.getElementById("highlowTable")
+                rowElem = tableElem.insertRow(-1)
+                rowElem.setAttribute("id", stock.ID)
+                cell1 = rowElem.insertCell(0)
+                cell1.innerHTML = stock.ID
+                cell2 = rowElem.insertCell(1)
+                cell2.innerHTML = stock.symbol
+                cell3 = rowElem.insertCell(2)
+                cell3.innerHTML = stock.high
+                cell4 = rowElem.insertCell(3)
+                cell4.innerHTML = stock.low
+                cell5 = rowElem.insertCell(4)
+                cell5.innerHTML = '<button class=button onclick="doDelete(this)">Delete</button>'
+                 }
+            populateTable();    
+        </script>
+    </body>
+</html>

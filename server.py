@@ -93,6 +93,27 @@ def getAll():
     else:
         return jsonify(stockDao.getAll())
 
+#get all High Low - used to show all high lows in the portfolio
+@app.route('/highs')
+def getAllHigh():
+    if not 'username' in session:
+        return redirect("login.html")
+    else:
+        return jsonify(highlowDao.getAll())
+
+
+#delete an entry from the HighLow database and html table
+@app.route('/highs/<int:ID>', methods=['DELETE'])
+def deleteHigh(ID):
+    if not 'username' in session:
+        return redirect("login.html")
+    else:
+        highlowDao.delete(ID)
+
+        return jsonify({"done": True})
+
+
+
 # find By id - used to find a particular stock by it's ID
 @app.route('/stocks/<int:ID>')
 def findById(ID):
