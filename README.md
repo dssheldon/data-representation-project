@@ -30,6 +30,9 @@ The contents of this repository are as follows:
 15. loadHighLows.html (staticpages folder) - Static page which loads the highs and lows in the second database 
 16. cream_dust.png (staticpages/img folder) - background image of the static pages 
 
+## Hosting on Python Anywhere
+The website has been hosted on Python Anywhere. The link for this is: [PythonAnywhere](http://sheldondsouza.pythonanywhere.com/)
+
 
 ## Layout of the websitse
 1. The website starts on a login page where the user has to enter a username and password to proceed. The username is: G00387857@gmit.ie and the password is: password. Once the correct credentials have been entered it starts a session which will continue until the Logout button has been pressed.
@@ -73,10 +76,7 @@ To run the file do the following:
 3. The website connects to two databases. One for the user to view and add to the stock portfolio i.e. `stock_close` table within the `datarepresentation` database and the other to track an add the highs and lows of the stock i.e. `high_lows` table within the `highlow` database.
 4. The website connect to an external API to obtain live information on stocks and shares
 5. The websites uses styles, background images etc. to make it look nice.
-
-## Next Steps
-
-Next steps will be to attempt to host the website on an external server. 
+6. The website is externally hosted on: [PythonAnywhere](http://sheldondsouza.pythonanywhere.com/)
 
 ## Contact
 Email me at: [Sheldon D'Souza](G00387857@gmit.ie)
